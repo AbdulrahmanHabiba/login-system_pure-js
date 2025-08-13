@@ -153,4 +153,4 @@ If you encounter any issues or have questions:
 
 ---
 
-**Built with ❤️ using modern web technologies**
+**Built with AH using modern web technologies**
