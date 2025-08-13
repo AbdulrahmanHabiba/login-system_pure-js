@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold text-center mb-8 text-blue-600">Login & Register System Test</h1>
+        
+        <div class="grid md:grid-cols-3 gap-6">
+            <!-- Test Registration -->
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <h2 class="text-xl font-semibold mb-4 text-green-600">Test Registration</h2>
+                <p class="text-gray-600 mb-4">Test the registration functionality with sample data</p>
+                <button onclick="testRegistration()" class="w-full bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded-lg">
+                    Test Registration
+                </button>
+            </div>
+
+            <!-- Test Login -->
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <h2 class="text-xl font-semibold mb-4 text-blue-600">Test Login</h2>
+                <p class="text-gray-600 mb-4">Test login with registered credentials</p>
+                <button onclick="testLogin()" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg">
+                    Test Login
+                </button>
+            </div>
+
+            <!-- Test Profile -->
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <h2 class="text-xl font-semibold mb-4 text-purple-600">Test Profile</h2>
+                <p class="text-gray-600 mb-4">View current user profile data</p>
+                <button onclick="testProfile()" class="w-full bg-purple-500 hover:bg-purple-600 text-white font-medium py-2 px-4 rounded-lg">
+                    Test Profile
+                </button>
+            </div>
+        </div>
+
+        <!-- Test Results -->
+        <div id="test-results" class="mt-8 bg-white p-6 rounded-lg shadow-lg">
+            <h3 class="text-lg font-semibold mb-4">Test Results</h3>
+            <div id="results-content" class="text-gray-600">
+                Click any test button above to see results here.
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="mt-8 text-center">
+            <a href="index.html" class="inline-block bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-lg mx-2">
+                Go to Login
+            </a>
+            <a href="register.html" class="inline-block bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-lg mx-2">
+                Go to Register
+            </a>
+            <a href="profile.html" class="inline-block bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-lg mx-2">
+                Go to Profile
+            </a>
+        </div>
+    </div>
+
+    <script>
+        function testRegistration() {
+            const testUser = {
+                email: 'test@example.com',
+                password: 'test123',
+                name: 'Test User',
+                registrationDate: new Date().toISOString()
+            };
+
+            // Get existing users or create new array
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            
+            // Check if user already exists
+            const existingUser = users.find(u => u.email === testUser.email);
+            if (existingUser) {
+                showResult('Registration Test: User already exists', 'warning');
+                return;
+            }
+
+            // Add test user
+            users.push(testUser);
+            localStorage.setItem('users', JSON.stringify(users));
+            
+            showResult('Registration Test: Test user created successfully!', 'success');
+        }
+
+        function testLogin() {
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const testUser = users.find(u => u.email === 'test@example.com');
+            
+            if (!testUser) {
+                showResult('Login Test: No test user found. Please run registration test first.', 'error');
+                return;
+            }
+
+            // Simulate login
+            localStorage.setItem('currentUser', JSON.stringify(testUser));
+            showResult('Login Test: Test user logged in successfully!', 'success');
+        }
+
+        function testProfile() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            
+            if (!currentUser) {
+                showResult('Profile Test: No user logged in. Please run login test first.', 'error');
+                return;
+            }
+
+            const profileInfo = `
+                <strong>Profile Test Results:</strong><br>
+                Name: ${currentUser.name}<br>
+                Email: ${currentUser.email}<br>
+                Registration Date: ${new Date(currentUser.registrationDate).toLocaleDateString()}
+            `;
+            
+            showResult(profileInfo, 'success');
+        }
+
+        function showResult(message, type) {
+            const resultsContent = document.getElementById('results-content');
+            const className = type === 'success' ? 'text-green-600' : 
+                            type === 'error' ? 'text-red-600' : 'text-yellow-600';
+            
+            resultsContent.innerHTML = `<div class="${className}">${message}</div>`;
+        }
+
+        // Clear test data function
+        function clearTestData() {
+            localStorage.removeItem('users');
+            localStorage.removeItem('currentUser');
+            showResult('All test data cleared!', 'success');
+        }
+
+        // Add clear button to results section
+        document.addEventListener('DOMContentLoaded', function() {
+            const resultsDiv = document.getElementById('test-results');
+            const clearButton = document.createElement('button');
+            clearButton.textContent = 'Clear Test Data';
+            clearButton.className = 'mt-4 bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-lg';
+            clearButton.onclick = clearTestData;
+            resultsDiv.appendChild(clearButton);
+        });
+    </script>
+</body>
+</html>
